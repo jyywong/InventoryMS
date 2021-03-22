@@ -1,0 +1,95 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Forms {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Form Elements</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="javascript:">Orders</a></li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Orders</h3>
+                    </div>
+                    <div class="card-block">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th>Item Name</th>
+                                        <th>Lab</th>
+                                        <th>Inventory</th>
+                                        <th>Needed by </th>
+                                        <th>Ordered by</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td><a href="">{{order.item.name}}</a></td>
+                                        <td> {{order.item.inventory.lab.name}}</td>
+                                        <td> {{order.item.inventory.name}}</td>
+                                        <td> {{order.needed_by}}</td>
+                                        <td> {{order.user}}</td>
+                                        <td><button class="btn btn-round">Approve </button></td>
+                                        <td><button class="btn btn-round">Reject </button></td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        
+                                        <td>Mark</td>
+                                        <td>Otto</td>
+                                        <td>@mdo</td>
+                                    </tr>
+                                    <tr>
+                                        
+                                        <td>Jacob</td>
+                                        <td>Thornton</td>
+                                        <td>@fat</td>
+                                    </tr>
+                                    <tr>
+                                        
+                                        <td>Larry</td>
+                                        <td>the Bird</td>
+                                        <td>@twitter</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

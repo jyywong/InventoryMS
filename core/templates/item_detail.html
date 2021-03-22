@@ -1,0 +1,171 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+    <div class="pcoded-content">
+        <div class="pcoded-inner-content">
+            <!-- [ breadcrumb ] start -->
+
+            <!-- [ breadcrumb ] end -->
+            <div class="main-body">
+                <div class="page-wrapper">
+                    <!-- [ Main Content ] start -->
+                    <div class="row">
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card ">
+                                <div class="card-block">
+                                    <h1 class="mb-4">Item name</h1><a href="{% url 'item_add' item.pk %}"><button class="btn btn-secondary">Add</button></a>
+                                    <a href="{% url 'item_remove' item.pk %}"><button class="btn btn-secondary">Remove</button></a>
+                                    <a href="{% url 'order_create' item.pk %}"><button class="btn btn-secondary">Add an order request</button></a>
+                                    <h5> Inventory: {{item.inventory.name}} </h5>
+                                    <h5> Lab: {{item.inventory.lab.name}} </h5>
+                                    <h5> Manufacturer: {{item.manufacturer}} </h5>
+                                    <h5> Notes: {{item.notes}} </h5>
+                                </div>
+                            </div>
+                        </div>
+                        <!--[ Monthly  sales section ] starts-->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card">
+                                <div class="card-block">
+                                    <h6 class="mb-4">Average monthly use</h6>
+                                    <canvas id="myChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <!--[ Monthly  sales section ] end-->
+                        <!--[ daily sales section ] start-->
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card">
+                                <div class="card-block">
+                                    <h6 class="mb-4">Quantity in stock</h6>
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-9">
+                                            <h2 class="f-w-300 d-flex align-items-center m-b-0"> {{item.quantity}} </h2>
+                                        </div>
+
+                                        <div class="col-3 text-right">
+                                            <p class="m-b-0">67% of last order left </p>
+                                        </div>
+                                    </div>
+                                    <div class="progress m-t-30" style="height: 7px;">
+                                        <div class="progress-bar progress-c-theme" role="progressbar" style="width: 67%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--[ daily sales section ] end-->
+                        
+                        
+                        <!--[ Recent Users ] start-->
+                        <div class="col-xl-12 col-md-6">
+                            <div class="card Recent-Users">
+                                <div class="card-header">
+                                    <h5>Recent Logs</h5>
+                                </div>
+                                <div class="card-block px-0 py-3">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                {% for log in logs %}
+                                                <tr class="unread">
+                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
+                                                    <td>
+                                                        <h6 class="mb-1">{{log.user.username}}</h6>
+                                                        <p class="m-0">Lorem Ipsum is simply…</p>
+                                                    </td>
+                                                    <td>
+                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{log.date}}</h6>
+                                                    </td>
+                                                    <td> <h5>Added : {{log.quantity}}</h5></td>
+                                                </tr>
+                                                {% endfor %}
+                                                <tr class="unread">
+                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
+                                                    <td>
+                                                        <h6 class="mb-1">Isabella Christensen</h6>
+                                                        <p class="m-0">Lorem Ipsum is simply…</p>
+                                                    </td>
+                                                    <td>
+                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
+                                                    </td>
+                                                    <td> <h5>Added : 5</h5></td>
+                                                </tr>
+                                                <tr class="unread">
+                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-2.jpg" alt="activity-user"></td>
+                                                    <td>
+                                                        <h6 class="mb-1">Mathilde Andersen</h6>
+                                                        <p class="m-0">Lorem Ipsum is simply text of…</p>
+                                                    </td>
+                                                    <td>
+                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>11 MAY 10:35</h6>
+                                                    </td>
+                                                    <td> <h5>Finished: 1</h5></td>
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--[ Recent Users ] end-->
+
+                        
+
+                    </div>
+                    <!-- [ Main Content ] end -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    </script>
+{% endblock javascripts %}
