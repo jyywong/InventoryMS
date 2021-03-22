@@ -25,10 +25,23 @@ class LabView(DetailView):
     template_name = "lab_detail.html"
 
     def get_context_data(self, *args, **kwargs):
+        this_lab = Lab.objects.get(id = self.kwargs['pk'])
         context = super().get_context_data(**kwargs)
-        context['members'] = Lab.objects.get(id = self.kwargs['pk']).members.all()
-        context['logs'] = Item_Change_Log.objects.filter(item = Item.objects.get(id = self.kwargs['pk'])).order_by('-date')
+        context['members'] = this_lab.members.all()
+        context['invs'] = Inventory.objects.filter(lab = this_lab)
+        context['inv_count'] = Inventory.objects.filter(lab = this_lab).count()
+        context['item_count'] = Item.objects.filter(inventory__lab = this_lab).count()
+        context['order_count'] = Item_order.objects.filter(item__inventory__lab = this_lab).count()
         return context
+
+class LabAdd(UpdateView):
+    model = Lab
+    fields = ['members']
+    context_object_name = "lab"
+    template_name ="lab_member_add.html"
+
+    def get_success_url(self):
+            return reverse('lab_view', args =(self.object.id,))
 
 class Inventory_Create(CreateView):
     model = Inventory
@@ -46,6 +59,20 @@ class Inventory_Update(UpdateView):
     model = Inventory
     fields = ['item']
     template_name = 'create_lab.html'
+    
+class InvView(DetailView):
+    model = Inventory
+    context_object_name = "inv"
+
+    template_name = "inv_detail.html"
+
+    def get_context_data(self, *args, **kwargs):
+        this_inv = Inventory.objects.get(id = self.kwargs['pk'])
+        context = super().get_context_data(**kwargs)
+        context['items'] = Item.objects.filter(inventory = this_inv)
+        context['item_count'] = Item.objects.filter(inventory = this_inv).count()
+        context['order_count'] = Item_order.objects.filter(item__inventory = this_inv).count()
+        return context
     
     
 class Item_Create(CreateView):
@@ -94,6 +121,7 @@ class ItemView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context['logs'] = Item_Change_Log.objects.filter(item = Item.objects.get(id = self.kwargs['pk'])).order_by('-date')
+        context['percent'] = Item_Change_Log.percent_of_last_restock(Item.objects.get(id = self.kwargs['pk']) )
         return context
 
 class ItemAdd(UpdateView):
@@ -154,8 +182,30 @@ class ItemOrderCreate(CreateView):
         object.user = self.request.user
         object.save()
         return super().form_valid(form)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['item'] = Item.objects.get(id = self.kwargs['pk'])
+        
+        return context
+
     def get_success_url(self):
         return reverse('home')
+
+class LabOrderList(ListView):
+    model = Item_order
+    context_object_name = 'orders'
+    template_name='lab_order_list.html'
+
+    def get_queryset(self):
+        queryset = Item_order.objects.filter(
+            item__inventory__lab = Lab.objects.get(id = self.kwargs['pk'])
+        )
+        return queryset
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lab'] = Lab.objects.get(id = self.kwargs['pk'])
+        return context
 
 class OrderList(ListView):
     model = Item_order

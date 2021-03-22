@@ -19,7 +19,7 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">Item name</h1><a href="{% url 'item_add' item.pk %}"><button class="btn btn-secondary">Add</button></a>
+                                    <h1 class="mb-4">{{item.name}}</h1><a href="{% url 'item_add' item.pk %}"><button class="btn btn-secondary">Add</button></a>
                                     <a href="{% url 'item_remove' item.pk %}"><button class="btn btn-secondary">Remove</button></a>
                                     <a href="{% url 'order_create' item.pk %}"><button class="btn btn-secondary">Add an order request</button></a>
                                     <h5> Inventory: {{item.inventory.name}} </h5>
@@ -50,11 +50,11 @@
                                         </div>
 
                                         <div class="col-3 text-right">
-                                            <p class="m-b-0">67% of last order left </p>
+                                            <p class="m-b-0">{{percent |floatformat:2}}% of last order left </p>
                                         </div>
                                     </div>
                                     <div class="progress m-t-30" style="height: 7px;">
-                                        <div class="progress-bar progress-c-theme" role="progressbar" style="width: 67%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar progress-c-theme" role="progressbar" style="width: {{percent |floatformat:2}}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
                             </div>
@@ -80,32 +80,16 @@
                                                         <p class="m-0">Lorem Ipsum is simply…</p>
                                                     </td>
                                                     <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{log.date}}</h6>
+                                                        <h6 class="text-muted">{{log.date}}</h6>
                                                     </td>
-                                                    <td> <h5>Added : {{log.quantity}}</h5></td>
+                                                    {% if log.action == 'Add' %}
+                                                    <td> <h5><i class="fas fa-circle text-c-green f-10 m-r-15"></i>Added: {{log.quantity}}</h5></td>
+                                                    {% else %}
+                                                    <td> <h5><i class="fas fa-circle text-c-red f-10 m-r-15"></i>Removed: {{log.quantity}}</h5></td>
+                                                    {% endif %}
                                                 </tr>
                                                 {% endfor %}
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Isabella Christensen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
-                                                    </td>
-                                                    <td> <h5>Added : 5</h5></td>
-                                                </tr>
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-2.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Mathilde Andersen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply text of…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-red f-10 m-r-15"></i>11 MAY 10:35</h6>
-                                                    </td>
-                                                    <td> <h5>Finished: 1</h5></td>
+                                                
                                                 
                                             </tbody>
                                         </table>

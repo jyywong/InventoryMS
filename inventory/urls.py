@@ -16,4 +16,7 @@ urlpatterns = [
     path('item_detail/order/<int:pk>', views.ItemOrderCreate.as_view(), name="order_create" ),
     path('orders', views.OrderList.as_view(), name="order_lists" ),
     path('lab_detail/<int:pk>', views.LabView.as_view(), name="lab_view" ),
+    path('lab_add/<int:pk>', views.LabAdd.as_view(), name="lab_add_member" ),
+    path('inv_detail/<int:pk>', views.InvView.as_view(), name="inventory_view" ),
+    path('lab_detail/orders/<int:pk>', views.LabOrderList.as_view(), name="lab_orders" ),
 ]

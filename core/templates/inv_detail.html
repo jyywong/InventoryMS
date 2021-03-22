@@ -19,8 +19,8 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">{{lab.name}}</h1><a href="{% url 'lab_add_member' lab.pk %}"><button class="btn btn-secondary">Add/Remove Member</button></a>
-                                    <a href="{% url 'create_inventory' lab.pk %}"><button class="btn btn-secondary">Add an inventory</button></a>
+                                    <h1 class="mb-4">{{inv.name}}</h1><a href=""><button class="btn btn-secondary">Add Item</button></a>
+                                    <a href=""><button class="btn btn-secondary">Remove Item</button></a>
                                     <h5> Inventory:  </h5>
                                     <h5> Lab:  </h5>
                                     <h5> Manufacturer:  </h5>
@@ -40,6 +40,7 @@
                         <!--[ Monthly  sales section ] end-->
                         <!--[ daily sales section ] start-->
                         <div class="col-md-6 col-xl-4">
+                            
                             <div class="card">
                                 <div class="card-block border-bottom">
                                     <div class="row d-flex align-items-center">
@@ -50,12 +51,14 @@
                                             <h3 class="f-w-300">{{order_count}}</h3>
                                             <span class="d-block text-uppercase">Orders</span>
                                         </div>
+                                        {% if order_count != 0 %}
                                         <div class="col">
-                                            <a href="{% url 'lab_orders' lab.pk %}"><button class="btn btn-warning"> Check orders </button></a>
+                                            <button class="btn btn-warning"> Check orders </button>
                                         </div>
+                                        {% endif %}  
                                     </div>
                                 </div>
-                                <div class="card-block border-bottom">
+                                <div class="card-block ">
                                     <div class="row d-flex align-items-center">
                                         <div class="col-auto">
                                             <i class="feather icon-box f-30 text-c-green"></i>
@@ -66,44 +69,34 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-block">
-                                    <div class="row d-flex align-items-center">
-                                        <div class="col-auto">
-                                            <i class="feather icon-layers f-30 text-c-blue"></i>
-                                        </div>
-                                        <div class="col">
-                                            <h3 class="f-w-300">{{inv_count}}</h3>
-                                            <span class="d-block text-uppercase">Inventories</span>
-                                        </div>
-                                    </div>
-                                </div>
                                 
                             </div>
                         </div>
                         <!--[ daily sales section ] end-->
+                        
                         <!--[ Recent Users ] start-->
                         <div class="col-xl-12 col-md-6">
                             <div class="card Recent-Users">
                                 <div class="card-header">
-                                    <h5>Inventories</h5>
+                                    <h5>Items</h5>
                                 </div>
                                 <div class="card-block px-0 py-3">
                                     <div class="table-responsive">
                                         <table class="table table-hover">
                                             <tbody>
-                                                {% for inv in invs %}
+                                                {% for item in items %}
                                                 <tr class="unread">
                                                     <a href="#" style="display: block;">
                                                     <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
                                                     <td>
-                                                        <h6 class="mb-1">{{inv.name}}</h6>
+                                                        <h6 class="mb-1">{{item.name}}</h6>
                                                         <p class="m-0">Lorem Ipsum is simply…</p>
                                                     </td>
                                                     <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{log.date}}</h6>
+                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>Manufacturer: {{item.manufacturer}}</h6>
                                                     </td>
-                                                    <td> <h5>Items : 5</h5></td>
-                                                    <td><a href="{% url 'inventory_view' inv.pk %}"><button class="btn btn-primary">Details</button></a></td>
+                                                    <td> <h5>Quantity: {{item.quantity}}</h5></td>
+                                                    <td><a href="{% url 'item_view' item.pk %}"> <button class="btn btn-primary"> Details </button></a></td>
                                                     </a>
                                                 </tr>
                                                 {% endfor %}
@@ -116,38 +109,6 @@
                             </div>
                         </div>
                         <!--[ Recent Users ] end-->
-                        
-                        <!--[ Recent Users ] start-->
-                        <div class="col-xl-12 col-md-6">
-                            <div class="card Recent-Users">
-                                <div class="card-header">
-                                    <h5>Users</h5>
-                                </div>
-                                <div class="card-block px-0 py-3">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <tbody>
-                                                {% for member in members %}
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">{{member.username}}</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{log.date}}</h6>
-                                                    </td>
-                                                    <td> <h5>Added : {{log.quantity}}</h5></td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--[ Recent Users ] end-->
-                        
 
                         
 

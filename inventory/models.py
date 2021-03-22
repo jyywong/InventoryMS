@@ -35,9 +35,35 @@ class Item_Change_Log(models.Model):
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now= True)
 
+    @staticmethod
+    def get_most_recent_restock(item):
+        item_change_log = Item_Change_Log.objects.filter(item = item).order_by('-date')
+        for log in item_change_log:
+            if log.action == 'Add':
+                return log.quantity
+    @staticmethod
+    def percent_of_last_restock(item):
+        if Item_Change_Log.get_most_recent_restock(item):
+            return (item.quantity / Item_Change_Log.get_most_recent_restock(item))* 100
+        else: 
+            return 0
+
 class Item_order(models.Model):
+    status_choices = [
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+    status = models.CharField(
+        max_length=100,
+        choices=status_choices,
+        default = 'Pending'
+    )
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='order_item')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='order_user')
     quantity = models.IntegerField()
     needed_by = models.DateField()
+
     notes = models.TextField(default='')
+    
+

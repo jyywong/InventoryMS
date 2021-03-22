@@ -19,8 +19,7 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">{{lab.name}}</h1><a href="{% url 'lab_add_member' lab.pk %}"><button class="btn btn-secondary">Add/Remove Member</button></a>
-                                    <a href="{% url 'create_inventory' lab.pk %}"><button class="btn btn-secondary">Add an inventory</button></a>
+                                    <h1 class="mb-4">{{lab.name}}</h1>
                                     <h5> Inventory:  </h5>
                                     <h5> Lab:  </h5>
                                     <h5> Manufacturer:  </h5>
@@ -51,7 +50,7 @@
                                             <span class="d-block text-uppercase">Orders</span>
                                         </div>
                                         <div class="col">
-                                            <a href="{% url 'lab_orders' lab.pk %}"><button class="btn btn-warning"> Check orders </button></a>
+                                            <button class="btn btn-warning"> Check orders </button>
                                         </div>
                                     </div>
                                 </div>
@@ -85,28 +84,39 @@
                         <div class="col-xl-12 col-md-6">
                             <div class="card Recent-Users">
                                 <div class="card-header">
-                                    <h5>Inventories</h5>
+                                    <h1>Recent Orders</h1>
                                 </div>
                                 <div class="card-block px-0 py-3">
                                     <div class="table-responsive">
                                         <table class="table table-hover">
                                             <tbody>
-                                                {% for inv in invs %}
+                                                {% for order in orders %}
                                                 <tr class="unread">
-                                                    <a href="#" style="display: block;">
                                                     <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
                                                     <td>
-                                                        <h6 class="mb-1">{{inv.name}}</h6>
+                                                        <h6 class="mb-1">{{order.item.name}} - {{order.item.inventory.name}} - {{order.item.inventory.lab.name}}</h6>
                                                         <p class="m-0">Lorem Ipsum is simply…</p>
                                                     </td>
                                                     <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{log.date}}</h6>
+                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>Needed by {{order.needed_by}}</h6>
                                                     </td>
-                                                    <td> <h5>Items : 5</h5></td>
-                                                    <td><a href="{% url 'inventory_view' inv.pk %}"><button class="btn btn-primary">Details</button></a></td>
-                                                    </a>
+                                                    <td>
+                                                        Status: {{order.status}}
+                                                    </td>
+                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
                                                 </tr>
                                                 {% endfor %}
+                                                <tr class="unread">
+                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
+                                                    <td>
+                                                        <h6 class="mb-1">Isabella Christensen</h6>
+                                                        <p class="m-0">Lorem Ipsum is simply…</p>
+                                                    </td>
+                                                    <td>
+                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
+                                                    </td>
+                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
+                                                </tr>
                                                 
                                                 
                                             </tbody>
@@ -116,37 +126,7 @@
                             </div>
                         </div>
                         <!--[ Recent Users ] end-->
-                        
-                        <!--[ Recent Users ] start-->
-                        <div class="col-xl-12 col-md-6">
-                            <div class="card Recent-Users">
-                                <div class="card-header">
-                                    <h5>Users</h5>
-                                </div>
-                                <div class="card-block px-0 py-3">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <tbody>
-                                                {% for member in members %}
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">{{member.username}}</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{log.date}}</h6>
-                                                    </td>
-                                                    <td> <h5>Added : {{log.quantity}}</h5></td>
-                                                </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--[ Recent Users ] end-->
+
                         
 
                         
