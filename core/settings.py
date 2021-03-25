@@ -32,8 +32,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    'api',
     'inventory',
-    'widget_tweaks'  # Enable the inner app 
+    'widget_tweaks',
+    'rest_framework'  # Enable the inner app 
 ]
 
 MIDDLEWARE = [

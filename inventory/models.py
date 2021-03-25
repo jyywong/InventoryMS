@@ -14,11 +14,11 @@ class Inventory(models.Model):
 class Item(models.Model):
     inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, related_name='inventory')
     name = models.CharField(max_length=255)
-    e_date = models.DateField()
+    e_date = models.DateField(blank =True)
     manufacturer = models.CharField(max_length=255)
-    notes = models.TextField()
-    bar_code = models.BigIntegerField()
-    location_text = models.TextField()
+    notes = models.TextField(blank=True)
+    bar_code = models.BigIntegerField(blank =True, null=True)
+    location_text = models.TextField(blank =True)
     quantity = models.IntegerField()
 
 class Item_Change_Log(models.Model):

@@ -19,11 +19,9 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">{{inv.name}}</h1><a href=""><button class="btn btn-secondary">Add Item</button></a>
+                                    <h1 class="mb-4">{{inv.name}}</h1><a href="{% url 'item_create' inv.pk %}"><button class="btn btn-secondary">Add Item</button></a>
                                     <a href=""><button class="btn btn-secondary">Remove Item</button></a>
-                                    <h5> Inventory:  </h5>
-                                    <h5> Lab:  </h5>
-                                    <h5> Manufacturer:  </h5>
+                                    <h5> Lab: {{inv.lab.name}} </h5>
                                     <h5> Notes:  </h5>
                                 </div>
                             </div>
@@ -49,13 +47,13 @@
                                         </div>
                                         <div class="col">
                                             <h3 class="f-w-300">{{order_count}}</h3>
-                                            <span class="d-block text-uppercase">Orders</span>
+                                            <span class="d-block text-uppercase">Pending Orders</span>
                                         </div>
                                         {% if order_count != 0 %}
-                                        <div class="col">
-                                            <button class="btn btn-warning"> Check orders </button>
-                                        </div>
-                                        {% endif %}  
+                                            <div class="col">
+                                                <a href="{% url 'lab_orders' inv.lab.pk %}"><button class="btn btn-warning"> Check orders </button></a>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="card-block ">
@@ -97,6 +95,7 @@
                                                     </td>
                                                     <td> <h5>Quantity: {{item.quantity}}</h5></td>
                                                     <td><a href="{% url 'item_view' item.pk %}"> <button class="btn btn-primary"> Details </button></a></td>
+                                                    <td><a href="{% url 'item_delete' item.pk %}"> <button class="btn btn-danger"> Delete </button></a></td>
                                                     </a>
                                                 </tr>
                                                 {% endfor %}

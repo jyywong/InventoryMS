@@ -21,9 +21,7 @@
                                 <div class="card-block">
                                     <h1 class="mb-4">{{lab.name}}</h1><a href="{% url 'lab_add_member' lab.pk %}"><button class="btn btn-secondary">Add/Remove Member</button></a>
                                     <a href="{% url 'create_inventory' lab.pk %}"><button class="btn btn-secondary">Add an inventory</button></a>
-                                    <h5> Inventory:  </h5>
-                                    <h5> Lab:  </h5>
-                                    <h5> Manufacturer:  </h5>
+                                    <h5> PI:  Dr. Bean </h5>
                                     <h5> Notes:  </h5>
                                 </div>
                             </div>
@@ -48,11 +46,13 @@
                                         </div>
                                         <div class="col">
                                             <h3 class="f-w-300">{{order_count}}</h3>
-                                            <span class="d-block text-uppercase">Orders</span>
+                                            <span class="d-block text-uppercase">Pending Orders</span>
                                         </div>
-                                        <div class="col">
-                                            <a href="{% url 'lab_orders' lab.pk %}"><button class="btn btn-warning"> Check orders </button></a>
-                                        </div>
+                                        {% if order_count != 0 %}
+                                            <div class="col">
+                                                <a href="{% url 'lab_orders' lab.pk %}"><button class="btn btn-warning"> Check orders </button></a>
+                                            </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="card-block border-bottom">
@@ -94,15 +94,15 @@
                                                 {% for inv in invs %}
                                                 <tr class="unread">
                                                     <a href="#" style="display: block;">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
+                                                    <td><i class="feather ml-3 icon-layers f-40 text-c-blue"></i></td>
                                                     <td>
-                                                        <h6 class="mb-1">{{inv.name}}</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
+                                                        <h4 class="mb-1">{{inv.name}}</h4>
+                                                        
                                                     </td>
                                                     <td>
                                                         <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>{{log.date}}</h6>
                                                     </td>
-                                                    <td> <h5>Items : 5</h5></td>
+
                                                     <td><a href="{% url 'inventory_view' inv.pk %}"><button class="btn btn-primary">Details</button></a></td>
                                                     </a>
                                                 </tr>

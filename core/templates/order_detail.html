@@ -19,13 +19,11 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">{{item.name}}</h1><a href="{% url 'item_add' item.pk %}"><button class="btn btn-secondary"><i class="feather ml-2 icon-plus f-20 text-c-green"></i></button></a>
-                                    <a href="{% url 'item_remove' item.pk %}"><button class="btn btn-secondary"><i class="feather ml-2 icon-minus f-20 text-c-red"></i></button></a>
-                                    <a href="{% url 'order_create' item.pk %}"><button class="btn btn-secondary"><i class="feather ml-2 icon-shopping-cart f-20 text-c-yellow"></i></button></a>
-                                    <h5> Inventory: {{item.inventory.name}} </h5>
-                                    <h5> Lab: {{item.inventory.lab.name}} </h5>
-                                    <h5> Manufacturer: {{item.manufacturer}} </h5>
-                                    <h5> Notes: {{item.notes}} </h5>
+                                    <h1 class="mb-4">Order for {{order.item.name}}</h1>
+                                    <h5> Inventory: {{order.item.inventory.name}} </h5>
+                                    <h5> Lab: {{order.item.inventory.lab.name}} </h5>
+                                    <h5> Manufacturer: {{order.item.manufacturer}} </h5>
+                                    <h5> Notes: {{order.item.notes}} </h5>
                                 </div>
                             </div>
                         </div>
@@ -46,7 +44,7 @@
                                     <h6 class="mb-4">Quantity in stock</h6>
                                     <div class="row d-flex align-items-center">
                                         <div class="col-9">
-                                            <h2 class="f-w-300 d-flex align-items-center m-b-0"> {{item.quantity}} </h2>
+                                            <h2 class="f-w-300 d-flex align-items-center m-b-0"> {{order.item.quantity}} </h2>
                                         </div>
 
                                         <div class="col-3 text-right">
@@ -66,29 +64,25 @@
                         <div class="col-xl-12 col-md-6">
                             <div class="card Recent-Users">
                                 <div class="card-header">
-                                    <h5>Recent Logs</h5>
+                                    <h5>Order</h5>
                                 </div>
                                 <div class="card-block px-0 py-3">
                                     <div class="table-responsive">
                                         <table class="table table-hover">
                                             <tbody>
-                                                {% for log in logs %}
                                                 <tr class="unread">
                                                     <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
                                                     <td>
-                                                        <h6 class="mb-1">{{log.user.username}}</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
+                                                        <h6 class="mb-1">Order for 16 units</h6>
+                                                        <p class="m-0">Requested by: {{order.user}}</p>
                                                     </td>
-                                                    <td>
-                                                        <h6 class="text-muted">{{log.date}}</h6>
-                                                    </td>
-                                                    {% if log.action == 'Add' %}
-                                                    <td> <h5><i class="fas fa-circle text-c-green f-10 m-r-15"></i>Added: {{log.quantity}}</h5></td>
-                                                    {% else %}
-                                                    <td> <h5><i class="fas fa-circle text-c-red f-10 m-r-15"></i>Removed: {{log.quantity}}</h5></td>
-                                                    {% endif %}
+                                                    <td> <h5><i class="fas fa-circle text-c-yellow f-10 m-r-15"></i>Status: {{order.status}}</h5></td>
+                                                    <form method ="POST">
+                                                        {% csrf_token %}
+                                                        <td><input type="submit" class="btn btn-success" name="Approve" value="Approve"></td>
+                                                        <td><input type="submit" class="btn btn-danger" name="Reject" value="Reject"></td>
+                                                    </form>
                                                 </tr>
-                                                {% endfor %}
                                                 
                                                 
                                             </tbody>

@@ -6,7 +6,8 @@ urlpatterns = [
     path('create_lab', views.Lab_Create.as_view(), name="create_lab"),
     path('inventory_create/<int:pk>', views.Inventory_Create.as_view(), name="create_inventory"),
     path('inventory_update', views.Inventory_Update.as_view(), name="update_inventory"),
-    path('item_create', views.Item_Create.as_view(), name="item_create"),
+    path('item_create/<int:pk>', views.Item_Create.as_view(), name="item_create"),
+    path('item_delete/<int:pk>', views.Item_Delete.as_view(), name="item_delete"),
     path('my_labs', views.LabList.as_view(), name="lab_list"),
     path('inventory/<int:pk>', views.InvList.as_view(), name="inv_list" ),
     path('items/<int:pk>', views.ItemList.as_view(), name="item_list" ),
@@ -19,4 +20,5 @@ urlpatterns = [
     path('lab_add/<int:pk>', views.LabAdd.as_view(), name="lab_add_member" ),
     path('inv_detail/<int:pk>', views.InvView.as_view(), name="inventory_view" ),
     path('lab_detail/orders/<int:pk>', views.LabOrderList.as_view(), name="lab_orders" ),
+    path('lab_detail/orders/order_detail/<int:pk>', views.OrderDetail, name="order_detail" ),
 ]
