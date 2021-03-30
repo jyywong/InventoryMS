@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'app',
     'api',
     'inventory',
+    'core',
     'widget_tweaks',
     'rest_framework'  # Enable the inner app 
 ]
@@ -50,7 +51,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
-LOGIN_REDIRECT_URL = "home"   # Route defined in app/urls.py
+LOGIN_REDIRECT_URL = "lab_list"   # Route defined in app/urls.py
 LOGOUT_REDIRECT_URL = "home"  # Route defined in app/urls.py
 TEMPLATE_DIR = os.path.join(CORE_DIR, "core/templates")  # ROOT dir for templates
 
@@ -129,3 +130,12 @@ STATICFILES_DIRS = (
 )
 #############################################################
 #############################################################
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+    ]
+}

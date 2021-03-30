@@ -19,11 +19,9 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">Order for {{order.item.name}}</h1>
-                                    <h5> Inventory: {{order.item.inventory.name}} </h5>
-                                    <h5> Lab: {{order.item.inventory.lab.name}} </h5>
-                                    <h5> Manufacturer: {{order.item.manufacturer}} </h5>
-                                    <h5> Notes: {{order.item.notes}} </h5>
+                                    <h1 class="mb-4">{{object.name}}</h1>
+                                    <h5> Lab: {{object.lab.name}} </h5>
+                                    <h5> Notes: {{object.notes}} </h5>
                                 </div>
                             </div>
                         </div>
@@ -39,22 +37,36 @@
                         <!--[ Monthly  sales section ] end-->
                         <!--[ daily sales section ] start-->
                         <div class="col-md-6 col-xl-4">
+                            
                             <div class="card">
-                                <div class="card-block">
-                                    <h6 class="mb-4">Quantity in stock</h6>
+                                <div class="card-block border-bottom">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-9">
-                                            <h2 class="f-w-300 d-flex align-items-center m-b-0"> {{order.item.quantity}} </h2>
+                                        <div class="col-auto">
+                                            <i class="feather icon-alert-triangle f-30 text-c-yellow"></i>
+                                        </div>
+                                        <div class="col">
+                                            <h3 class="f-w-300">{{order_count}}</h3>
+                                            <span class="d-block text-uppercase">Pending Orders</span>
                                         </div>
 
-                                        <div class="col-3 text-right">
-                                            <p class="m-b-0">{{percent |floatformat:2}}% of last order left </p>
-                                        </div>
-                                    </div>
-                                    <div class="progress m-t-30" style="height: 7px;">
-                                        <div class="progress-bar progress-c-theme" role="progressbar" style="width: {{percent |floatformat:2}}%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                            <div class="col">
+                                                <a href="{% url 'inv_order_list' object.pk %}"><button class="btn btn-warning"> Check orders </button></a>
+                                            </div>
+
                                     </div>
                                 </div>
+                                <div class="card-block ">
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-auto">
+                                            <i class="feather icon-box f-30 text-c-green"></i>
+                                        </div>
+                                        <div class="col">
+                                            <h3 class="f-w-300">{{item_count}}</h3>
+                                            <span class="d-block text-uppercase">Total Items</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
                         <!--[ daily sales section ] end-->
@@ -64,40 +76,20 @@
                         <div class="col-xl-12 col-md-6">
                             <div class="card Recent-Users">
                                 <div class="card-header">
-                                    <h5>Order</h5>
+                                    <h5>Delete this item </h5>
                                 </div>
                                 <div class="card-block px-0 py-3">
                                     <div class="table-responsive">
                                         <table class="table table-hover">
                                             <tbody>
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Order for {{order.quantity}} units</h6>
-                                                        <p class="m-0">Requested by: {{order.user}}</p>
-                                                    </td>
-                                                    <td> 
-                                                        <h5>
-                                                            {% if order.status == 'Approved' %}
-                                                                <i class="fas fa-circle text-c-green f-10 m-r-15"></i>
-                                                            {% elif order.status == 'Pending' %}
-                                                                <i class="fas fa-circle text-c-yellow f-10 m-r-15"></i>
-                                                            {% elif order.status == 'Rejected' %}
-                                                                <i class="fas fa-circle text-c-red f-10 m-r-15"></i>
-                                                            {% endif %}
-                                                            Status: {{order.status}}
-                                                        </h5>
-                                                    </td>
-                                                    <form method ="POST">
-                                                        {% csrf_token %}
-                                                        {% if order.status != 'Approved' %}
-                                                            <td><input type="submit" class="btn btn-success" name="Approve" value="Approve"></td>
-                                                        {% endif %}
-                                                        {% if order.status != 'Rejected' %}
-                                                            <td><input type="submit" class="btn btn-danger" name="Reject" value="Reject"></td>
-                                                        {% endif %}
-                                                    </form>
-                                                </tr>
+                                                <div class="container">
+                                                <form method="post">{% csrf_token %}
+                                                    <div class="form-group">
+                                                        <h4 class="form-text">Are you sure you want to delete "{{ object.name }}"?</h4>
+                                                        <input class="form-control btn btn-danger" type="submit" value="Confirm">
+                                                    </div>
+                                                </div>  
+                                                </form>
                                                 
                                                 
                                             </tbody>
@@ -162,3 +154,4 @@
     });
     </script>
 {% endblock javascripts %}
+

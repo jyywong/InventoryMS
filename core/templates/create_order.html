@@ -19,9 +19,7 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">{{item.name}}</h1><a href="{% url 'item_add' item.pk %}"><button class="btn btn-secondary">Add</button></a>
-                                    <a href="{% url 'item_remove' item.pk %}"><button class="btn btn-secondary">Remove</button></a>
-                                    <a href="{% url 'order_create' item.pk %}"><button class="btn btn-secondary">Add an order request</button></a>
+                                    <h1 class="mb-4">{{item.name}}</h1>
                                     <h5> Inventory: {{item.inventory.name}} </h5>
                                     <h5> Lab: {{item.inventory.lab.name}} </h5>
                                     <h5> Manufacturer: {{item.manufacturer}} </h5>

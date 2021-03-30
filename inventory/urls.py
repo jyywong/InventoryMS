@@ -3,6 +3,7 @@ from inventory import views
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
+    path('test_view', views.Home.as_view(), name="homepage"),
     path('create_lab', views.Lab_Create.as_view(), name="create_lab"),
     path('inventory_create/<int:pk>', views.Inventory_Create.as_view(), name="create_inventory"),
     path('inventory_update', views.Inventory_Update.as_view(), name="update_inventory"),
@@ -21,4 +22,9 @@ urlpatterns = [
     path('inv_detail/<int:pk>', views.InvView.as_view(), name="inventory_view" ),
     path('lab_detail/orders/<int:pk>', views.LabOrderList.as_view(), name="lab_orders" ),
     path('lab_detail/orders/order_detail/<int:pk>', views.OrderDetail, name="order_detail" ),
+    path('invite_member/<int:pk>', views.InviteMember.as_view(), name="invite_member" ),
+    path('invites', views.InviteList.as_view(), name="invite_list" ),
+    path('invite_detail/<int:pk>', views.InviteDetail, name="invite_detail" ),
+    path('inventory_orders/<int:pk>', views.InventoryOrderList.as_view(), name="inv_order_list" ),
+    path('inventory_delete/<int:pk>', views.InventoryDelete.as_view(), name="inventory_delete" ),
 ]

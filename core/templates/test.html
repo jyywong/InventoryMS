@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <h2>hello</h2>
+</head>
+<body>
+
+    <table id="labs">
+        <tr>
+            <th> Labs </th>
+        </tr>
+    </table>
+    <table id="items">
+        <tr>
+            <th> Items </th>
+        </tr>
+    </table>
+    <table id="item_view">
+        <tr>
+            <th> Item View </th>
+        </tr>
+
+    </table>
+
+    <script>
+        function getLabs(){
+            const url = "http://127.0.0.1:8000/api/lab_list"
+            fetch(url)
+            .then((res) => res.json())
+            .then(function(data){
+                const labTable = document.querySelector('#labs')
+                for (const lab of data ){
+                    let row = document.createElement("tr")
+                    let td = row.appendChild(document.createElement("td"))
+                    let newRow = td.appendChild(document.createTextNode(`${lab.name}`))
+                    labTable.appendChild(newRow)
+                }
+            })      
+        }
+        function getItems(){
+            const url = "http://127.0.0.1:8000/api/item_list/1"
+            fetch(url)
+            .then((res) => res.json())
+            .then(function(data){
+                const itemTable = document.querySelector('#items')
+                for (const item of data ){
+                    const button = document.createElement('button')
+                    button.innerHTML = `${item.name} Quantity: ${item.quantity} Click to increase quantity + 1`
+                    button.value = `${item.id}`
+                    let row = document.createElement("tr")
+                    row.appendChild(document.createElement("td")).appendChild(button)
+                    itemTable.appendChild(row)
+                }
+            })    
+        }
+        const itemTable = document.querySelector('#items')
+        var itemQuantity
+        itemTable.addEventListener('click', (e) => {
+            const target = e.target.value
+            fetch (`http://127.0.0.1:8000/api/item_detail/${target}`)
+            .then((res) => res.json())
+            .then(function(data){
+                itemQuantity = data.quantity
+                console.log(itemQuantity)
+            })
+            
+            const url = `http://127.0.0.1:8000/api/item_detail/${target}`
+            fetch(url, {
+                method: 'PATCH',
+                headers: {'Content-type' : 'application/json'},
+                body: JSON.stringify({
+                    'quantity' : itemQuantity += 1
+                })
+            })
+            getItems()
+        })
+            
+        getLabs()
+        getItems()
+    </script>
+</body>
+</html>

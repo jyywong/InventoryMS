@@ -20,7 +20,6 @@
                             <div class="card ">
                                 <div class="card-block">
                                     <h1 class="mb-4">{{inv.name}}</h1><a href="{% url 'item_create' inv.pk %}"><button class="btn btn-secondary">Add Item</button></a>
-                                    <a href=""><button class="btn btn-secondary">Remove Item</button></a>
                                     <h5> Lab: {{inv.lab.name}} </h5>
                                     <h5> Notes:  </h5>
                                 </div>
@@ -49,11 +48,11 @@
                                             <h3 class="f-w-300">{{order_count}}</h3>
                                             <span class="d-block text-uppercase">Pending Orders</span>
                                         </div>
-                                        {% if order_count != 0 %}
+
                                             <div class="col">
-                                                <a href="{% url 'lab_orders' inv.lab.pk %}"><button class="btn btn-warning"> Check orders </button></a>
+                                                <a href="{% url 'inv_order_list' inv.pk %}"><button class="btn btn-warning"> Check orders </button></a>
                                             </div>
-                                        {% endif %}
+
                                     </div>
                                 </div>
                                 <div class="card-block ">

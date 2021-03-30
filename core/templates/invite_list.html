@@ -16,47 +16,39 @@
                 <div class="page-wrapper">
                     <!-- [ Main Content ] start -->
                     <div class="row">
-                        {% if not labs %}
-                        <div class="col-sm-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5>Welcome to DjangoIMS</h5>
-                                </div>
-                                <div class="card-block">
-                                    <center><h3>You are not part of any labs yet. You can create one or join another lab!
-                                    </h3></center>
-                                    <div class="container">
-                                        <center>
-                                        <a href="{% url 'create_lab' %}"><button class="btn btn-success"> Create a lab </button></a>
-                                        <a href="{% url 'invite_list' %}"><button class="btn btn-primary"> Join a lab </button></a>
-                                        </center>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        {% else %}
-
+                        
                         <!--[ Recent Users ] start-->
                         <div class="col-xl-8 col-md-6">
                             <div class="card Recent-Users">
                                 <div class="card-header">
-                                    <h1>My labs</h1>
+                                    <h1>Lab Invites</h1>
                                 </div>
                                 <div class="card-block px-0 py-3">
                                     <div class="table-responsive">
                                         <table class="table table-hover">
                                             <tbody>
-                                                {% for lab in labs %}
+                                                {% if not invites %}
+                                                <td><h3 class="ml-3 text-muted "> It doesn't seem like you have any invites yet!</h3></td>
+                                                
+                                                {% endif %}
+                                                {% for invite in invites %}
                                                 <tr class="unread">
                                                     <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
                                                     <td>
-                                                        <h6 class="mb-1">{{lab.name}}</h6>
+                                                        <h6 class="mb-1">{{invite.lab_inviter.name}}</h6>
                                                         <p class="m-0">Lorem Ipsum is simply…</p>
                                                     </td>
                                                     <td>
+                                                        <h6 class="text-muted">
+                                                            {% if invite.status == "Pending" %}
+                                                            <i class="fas fa-circle text-c-yellow f-10 m-r-15"></i>
+                                                            {% else %}
+                                                            <i class="fas fa-circle text-c-green f-10 m-r-15"></i>
+                                                            {% endif %}
+                                                            Status: {{invite.status}} 
+                                                        </h6>
                                                     </td>
-                                                    <td><a href="{% url 'lab_view' lab.pk %}" class="label theme-bg text-white f-12">Details</a></td>
+                                                    <td><a href="{% url 'invite_detail' invite.pk %}" class="label theme-bg text-white f-12">Details</a></td>
                                                 </tr>
                                                 {% endfor %}
                                                 
@@ -68,7 +60,6 @@
                                 </div>
                             </div>
                         </div>
-                        {% endif %}
                         <!--[ Recent Users ] end-->
 
                         

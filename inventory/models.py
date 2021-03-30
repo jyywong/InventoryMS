@@ -7,6 +7,10 @@ class Lab(models.Model):
     name = models.CharField(max_length=255)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
+    def remove_member(self, member):
+        self.members.remove(member)
+
+
 class Inventory(models.Model):
     lab = models.ForeignKey(Lab, on_delete= models.CASCADE, related_name='lab')
     name = models.CharField(max_length=255)
@@ -63,7 +67,22 @@ class Item_order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='order_user')
     quantity = models.IntegerField()
     needed_by = models.DateField()
-
+    created_at = models.DateField(auto_now=True )
     notes = models.TextField(default='')
     
+class LabInvite(models.Model):
+    invitee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete= models.CASCADE, related_name='invitee')
+    lab_inviter = models.ForeignKey(Lab, on_delete=models.CASCADE, related_name='lab_inviter')
+    created_at = models.DateField(auto_now= True)
+    status_choices = [
+        ('Pending', 'Pending'),
+        ('Accepted', 'Accepted'),
+    ]
+    status = models.CharField(
+        max_length=100,
+        choices=status_choices,
+        default = 'Pending'
+    )
 
+    def AcceptInvite(self):
+        self.lab_inviter.members.add(self.invitee)

@@ -31,29 +31,26 @@
                                                 <tr class="unread">
                                                     <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
                                                     <td>
-                                                        <h6 class="mb-1">{{order.item.name}} - {{order.item.inventory.name}} - {{order.item.inventory.lab.name}}</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
+                                                        <h6 class="mb-1">{{order.item.name}} </h6>
+                                                        <p class="m-0">Inventory: {{order.item.inventory.name}} - Lab: {{order.item.inventory.lab.name}}</p>
                                                     </td>
                                                     <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>Needed by {{order.needed_by}}</h6>
+                                                        <h6 class="text-muted">Needed by {{order.needed_by}}</h6>
                                                     </td>
                                                     <td>
+                                                        {% if order.status == 'Approved' %}
+                                                            <i class="fas fa-circle text-c-green f-10 m-r-15"></i>
+                                                        {% elif order.status == 'Pending' %}
+                                                            <i class="fas fa-circle text-c-yellow f-10 m-r-15"></i>
+                                                        {% elif order.status == 'Rejected' %}
+                                                            <i class="fas fa-circle text-c-red f-10 m-r-15"></i>
+                                                        {% endif %}
                                                         Status: {{order.status}}
                                                     </td>
-                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
+                                                    <td><a href="{% url 'order_detail' order.pk %}" class="btn btn-primary">Details</a></td>
                                                 </tr>
                                                 {% endfor %}
-                                                <tr class="unread">
-                                                    <td><img class="rounded-circle" style="width:40px;" src="/static/assets/images/user/avatar-1.jpg" alt="activity-user"></td>
-                                                    <td>
-                                                        <h6 class="mb-1">Isabella Christensen</h6>
-                                                        <p class="m-0">Lorem Ipsum is simply…</p>
-                                                    </td>
-                                                    <td>
-                                                        <h6 class="text-muted"><i class="fas fa-circle text-c-green f-10 m-r-15"></i>11 MAY 12:56</h6>
-                                                    </td>
-                                                    <td><a href="#!" class="label theme-bg2 text-white f-12">Reject</a><a href="#!" class="label theme-bg text-white f-12">Approve</a></td>
-                                                </tr>
+                                               
                                                 
                                                 
                                             </tbody>
