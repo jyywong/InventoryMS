@@ -1,22 +1,44 @@
 
 from django.db import models
 from core import settings
-
+from django.db.models import Q
+from datetime import date
+import datetime
 # Create your models here.
 class Lab(models.Model):
     name = models.CharField(max_length=255)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL)
 
+    def __str__(self):
+        return self.name
     def remove_member(self, member):
         self.members.remove(member)
+    def get_traffic_per_inventory(self):
+        inv_traffic = dict((inv.name, 0) for inv in self.inventory.all())
+        for inv in self.inventory.all():
+            inv_traffic[inv.name] += inv.get_all_traffic()
+        return inv_traffic
 
 
 class Inventory(models.Model):
-    lab = models.ForeignKey(Lab, on_delete= models.CASCADE, related_name='lab')
+    lab = models.ForeignKey(Lab, on_delete= models.CASCADE, related_name='inventory')
     name = models.CharField(max_length=255)
+    def __str__(self):
+        return self.name
+
+    def get_all_traffic(self):
+        total_traffic = 0
+        for item in self.item.all():
+            total_traffic += Item_Change_Log.item_traffic_last_month(item)
+        return total_traffic
+    def get_traffic_per_item(self):
+        item_traffic = dict((item.name, 0) for item in self.item.all())
+        for item in self.item.all():
+            item_traffic[item.name] += Item_Change_Log.item_traffic_last_month(item)
+        return item_traffic
 
 class Item(models.Model):
-    inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, related_name='inventory')
+    inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, related_name='item')
     name = models.CharField(max_length=255)
     e_date = models.DateField(blank =True)
     manufacturer = models.CharField(max_length=255)
@@ -24,6 +46,9 @@ class Item(models.Model):
     bar_code = models.BigIntegerField(blank =True, null=True)
     location_text = models.TextField(blank =True)
     quantity = models.IntegerField()
+
+    def __str__(self):
+        return self.name
 
 class Item_Change_Log(models.Model):
     action_choices = [
@@ -34,7 +59,7 @@ class Item_Change_Log(models.Model):
         max_length=100,
         choices=action_choices,
     )
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='item')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='item_change_log')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user')
     quantity = models.IntegerField()
     date = models.DateTimeField(auto_now= True)
@@ -52,6 +77,20 @@ class Item_Change_Log(models.Model):
         else: 
             return 0
 
+    @staticmethod
+    def item_traffic_last_month(item):
+        past_month_change_logs = Item_Change_Log.objects.filter(
+            Q(item = item) &
+            Q(date__range =  (date.today() - datetime.timedelta(days = 30), date.today())) &
+            Q(action = 'Remove')
+        )
+        total = 0
+        for logs in past_month_change_logs:
+            total += logs.quantity
+        return total 
+
+
+
 class Item_order(models.Model):
     status_choices = [
         ('Pending', 'Pending'),
@@ -63,16 +102,16 @@ class Item_order(models.Model):
         choices=status_choices,
         default = 'Pending'
     )
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='order_item')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='order_user')
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='item_order')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='item_order')
     quantity = models.IntegerField()
     needed_by = models.DateField()
     created_at = models.DateField(auto_now=True )
     notes = models.TextField(default='')
     
 class LabInvite(models.Model):
-    invitee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete= models.CASCADE, related_name='invitee')
-    lab_inviter = models.ForeignKey(Lab, on_delete=models.CASCADE, related_name='lab_inviter')
+    invitee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete= models.CASCADE, related_name='lab_invite')
+    lab_inviter = models.ForeignKey(Lab, on_delete=models.CASCADE, related_name='lab_invite')
     created_at = models.DateField(auto_now= True)
     status_choices = [
         ('Pending', 'Pending'),

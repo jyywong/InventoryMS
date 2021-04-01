@@ -19,9 +19,9 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card ">
                                 <div class="card-block">
-                                    <h1 class="mb-4">{{item.name}}</h1><a href="{% url 'item_add' item.pk %}"><button class="btn btn-secondary"><i class="feather ml-2 icon-plus f-20 text-c-green"></i></button></a>
-                                    <a href="{% url 'item_remove' item.pk %}"><button class="btn btn-secondary"><i class="feather ml-2 icon-minus f-20 text-c-red"></i></button></a>
-                                    <a href="{% url 'order_create' item.pk %}"><button class="btn btn-secondary"><i class="feather ml-2 icon-shopping-cart f-20 text-c-yellow"></i></button></a>
+                                    <h1 class="mb-4">{{item.name}}</h1><a href="{% url 'item_add' item.pk %}"><button class="btn btn-secondary">Add quantity</button></a>
+                                    <a href="{% url 'item_remove' item.pk %}"><button class="btn btn-secondary">Remove quantity</i></button></a>
+                                    <a href="{% url 'order_create' item.pk %}"><button class="btn btn-secondary">Create an order</button></a>
                                     <h5> Inventory: {{item.inventory.name}} </h5>
                                     <h5> Lab: {{item.inventory.lab.name}} </h5>
                                     <h5> Manufacturer: {{item.manufacturer}} </h5>

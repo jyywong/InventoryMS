@@ -4,13 +4,14 @@ from django.views.generic import CreateView, UpdateView, TemplateView, ListView,
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.urls import reverse, reverse_lazy
 from django.db.models import Q
 from django import forms
 from .forms import InviteForm
 from core import settings
-
+from django.core.exceptions import PermissionDenied
+from json import dumps
 # Create your views here.
 
 
@@ -18,6 +19,9 @@ from core import settings
 class Home(TemplateView):
     template_name = 'homepage.html'
 
+'''
+Permission mixins 
+'''
 class LabMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         user = self.request.user
@@ -36,6 +40,65 @@ class ItemMixin(LoginRequiredMixin, UserPassesTestMixin):
         item = Item.objects.get(id = self.kwargs['pk'])
         return user in item.inventory.lab.members.all()
 
+'''
+Lab related views
+'''
+
+class Lab_Create(CreateView):
+    model = Lab
+    fields = ['name'] 
+    template_name = 'create_lab.html'
+
+    def get_success_url(self):
+        return reverse('lab_list')
+    
+    def form_valid(self, form):
+        object = form.save()
+        object.members.add(self.request.user)
+        object.save()
+        return super(Lab_Create, self).form_valid(form)
+
+class LabList(LoginRequiredMixin, ListView):
+    model = Lab
+    context_object_name = 'labs'
+    template_name='my_labs.html'
+    
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Lab.objects.filter(members= user)
+        return queryset
+
+class LabView(LabMixin, DetailView):
+    model = Lab
+    context_object_name = "lab"
+
+    template_name = "lab_detail.html"
+
+    def get_context_data(self, *args, **kwargs):
+        this_lab = Lab.objects.get(id = self.kwargs['pk'])
+        inv_traffic_JSON = dumps(this_lab.get_traffic_per_inventory())
+        context = super().get_context_data(**kwargs)
+        context['members'] = this_lab.members.all()
+        context['invs'] = Inventory.objects.filter(lab = this_lab)
+        context['inv_count'] = Inventory.objects.filter(lab = this_lab).count()
+        context['item_count'] = Item.objects.filter(inventory__lab = this_lab).count()
+        context['item_per_lab'] = Item.objects.filter()
+        context['inv_traffic'] = inv_traffic_JSON
+        context['order_count'] = Item_order.objects.filter(
+                Q(item__inventory__lab = this_lab) & 
+                Q(status = "Pending")
+            ).count()
+        return context
+
+class LabAdd(LabMixin, UpdateView):
+    model = Lab
+    fields = ['members']
+    context_object_name = "lab"
+    template_name ="lab_member_add.html"
+
+    def get_success_url(self):
+            return reverse('lab_view', args =(self.object.id,))
+
 class InviteMember(LabMixin, FormView):
     template_name = 'invite_member.html'
     form_class = InviteForm
@@ -52,72 +115,49 @@ class InviteMember(LabMixin, FormView):
         )
         return super(InviteMember, self).form_valid(form)
 
-# Remove member view
+@login_required
+def RemoveMember(request, lab_pk, user_pk):
+    lab = Lab.objects.get(id = lab_pk)
+    user = get_user_model().objects.get(id = user_pk)
+    if request.user not in lab.members.all():
+        raise PermissionDenied()
+    else: 
+        context = {
+            'user' : user,
+            'lab' : lab
+        }
 
-class InviteList( ListView):
-    template_name = 'invite_list.html' 
-    model = LabInvite 
-    context_object_name = 'invites'
+        if request.method == "POST":
+            if request.POST.get('Confirm'):
+                lab.remove_member(user)
+                lab.save()
+                return redirect('lab_view', pk = lab.id)
+        return render(request, 'remove_member.html', context)
+
+class LabOrderList(LabMixin, ListView):
+    model = Item_order
+    context_object_name = 'orders'
+    template_name='lab_order_list.html'
 
     def get_queryset(self):
-        user = self.request.user
-        queryset = LabInvite.objects.filter(invitee = user).order_by('created_at')
+        queryset = Item_order.objects.filter(
+            item__inventory__lab = Lab.objects.get(id = self.kwargs['pk'])
+        )
         return queryset
 
-@login_required
-def InviteDetail(request, pk):
-    invite = LabInvite.objects.get(id = pk)
-    context = {
-        'invite' : invite,
-    }
-
-    if request.method == "POST":
-        print('hello')
-        if request.POST.get('Accept'):
-            invite.status = 'Accepted'
-            invite.AcceptInvite()
-            invite.save()
-    return render(request, 'invite_detail.html', context)
-
-
-
-class Lab_Create(CreateView):
-    model = Lab
-    fields = ['name', 'members'] 
-    template_name = 'create_lab.html'
-
-    def get_success_url(self):
-        return reverse('create_inventory', args =(self.object.id,))
-
-class LabView(LabMixin, DetailView):
-    model = Lab
-    context_object_name = "lab"
-
-    template_name = "lab_detail.html"
-
-
     def get_context_data(self, *args, **kwargs):
-        this_lab = Lab.objects.get(id = self.kwargs['pk'])
         context = super().get_context_data(**kwargs)
-        context['members'] = this_lab.members.all()
-        context['invs'] = Inventory.objects.filter(lab = this_lab)
-        context['inv_count'] = Inventory.objects.filter(lab = this_lab).count()
-        context['item_count'] = Item.objects.filter(inventory__lab = this_lab).count()
-        context['item_per_lab'] = Item.objects.filter()
+        this_lab = Lab.objects.get(id = self.kwargs['pk'])
+        context['lab'] = this_lab
         context['order_count'] = Item_order.objects.filter(
                 Q(item__inventory__lab = this_lab) & 
                 Q(status = "Pending")
             ).count()
         return context
 
-class LabAdd(LabMixin, UpdateView):
-    model = Lab
-    fields = ['members']
-    context_object_name = "lab"
-    template_name ="lab_member_add.html"
-
-    def get_success_url(self):
-            return reverse('lab_view', args =(self.object.id,))
+'''
+Inventory related views
+'''
 
 class Inventory_Create(LabMixin, CreateView):
     model = Inventory
@@ -136,6 +176,16 @@ class Inventory_Create(LabMixin, CreateView):
 
     def get_success_url(self):
         return reverse('lab_view', args =(self.kwargs['pk'],))
+
+class InvList(LabMixin, ListView):
+    model = Inventory
+    context_object_name = 'invs'
+    template_name='lab_invs.html'
+
+    def get_queryset(self):
+        queryset = Inventory.objects.filter(lab = self.kwargs['pk'])
+        return queryset
+    
 
 class InventoryDelete(InventoryMixin, DeleteView):
     model = Inventory
@@ -171,15 +221,41 @@ class InvView(InventoryMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         this_inv = Inventory.objects.get(id = self.kwargs['pk'])
+        
         context = super().get_context_data(**kwargs)
         context['items'] = Item.objects.filter(inventory = this_inv)
         context['item_count'] = Item.objects.filter(inventory = this_inv).count()
+        context['item_traffic'] = this_inv.get_traffic_per_item()
         context['order_count'] = Item_order.objects.filter(
                 Q(item__inventory = this_inv) & 
                 Q(status = "Pending")
             ).count()
         return context
-    
+
+class InventoryOrderList(InventoryMixin, ListView):
+    model = Item_order
+    context_object_name = 'orders'
+    template_name = 'inv_order_list.html'
+
+    def get_queryset(self):
+        queryset = Item_order.objects.filter(
+            item__inventory = Inventory.objects.get(id = self.kwargs['pk'])
+        )
+        return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        this_inv = Inventory.objects.get(id = self.kwargs['pk'])
+        context['inv'] = this_inv
+        context['order_count'] = Item_order.objects.filter(
+                Q(item__inventory = this_inv) & 
+                Q(status = "Pending")
+            ).count()
+        return context
+
+'''
+Item related views
+'''
     
 class Item_Create(InventoryMixin, CreateView):
     model = Item
@@ -214,25 +290,6 @@ class Item_Delete(ItemMixin, DeleteView):
         inv = item.inventory
         return reverse('inventory_view',args =(inv.id,) )
 
-class LabList(LoginRequiredMixin, ListView):
-    model = Lab
-    context_object_name = 'labs'
-    template_name='my_labs.html'
-    
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Lab.objects.filter(members= user)
-        return queryset
-
-class InvList(LabMixin, ListView):
-    model = Inventory
-    context_object_name = 'invs'
-    template_name='lab_invs.html'
-
-    def get_queryset(self):
-        queryset = Inventory.objects.filter(lab = self.kwargs['pk'])
-        return queryset
-    
 class ItemList(InventoryMixin, ListView):
     model = Item
     context_object_name = 'items'
@@ -242,7 +299,6 @@ class ItemList(InventoryMixin, ListView):
         queryset = Item.objects.filter(inventory = self.kwargs['pk'])
         return queryset
  
-    
 class ItemView(ItemMixin, DetailView):
     model = Item
     context_object_name = "item"
@@ -322,49 +378,10 @@ class ItemOrderCreate(ItemMixin, CreateView):
     def get_success_url(self):
         return reverse('home')
 
-class LabOrderList(LabMixin, ListView):
-    model = Item_order
-    context_object_name = 'orders'
-    template_name='lab_order_list.html'
 
-    def get_queryset(self):
-        queryset = Item_order.objects.filter(
-            item__inventory__lab = Lab.objects.get(id = self.kwargs['pk'])
-        )
-        return queryset
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        this_lab = Lab.objects.get(id = self.kwargs['pk'])
-        context['lab'] = this_lab
-        context['order_count'] = Item_order.objects.filter(
-                Q(item__inventory__lab = this_lab) & 
-                Q(status = "Pending")
-            ).count()
-        return context
-
-class InventoryOrderList(InventoryMixin, ListView):
-    model = Item_order
-    context_object_name = 'orders'
-    template_name = 'inv_order_list.html'
-
-    def get_queryset(self):
-        queryset = Item_order.objects.filter(
-            item__inventory = Inventory.objects.get(id = self.kwargs['pk'])
-        )
-        return queryset
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        this_inv = Inventory.objects.get(id = self.kwargs['pk'])
-        context['inv'] = this_inv
-        context['order_count'] = Item_order.objects.filter(
-                Q(item__inventory = this_inv) & 
-                Q(status = "Pending")
-            ).count()
-        return context
-
-
+'''
+Other views
+'''
 
 class OrderList(LoginRequiredMixin, ListView):
     model = Item_order
@@ -383,21 +400,51 @@ class OrderList(LoginRequiredMixin, ListView):
 @login_required
 def OrderDetail(request, pk):
     order = Item_order.objects.get(id=pk)
-    context = {
-        'order' : order,
-    }
+    lab = order.item.inventory.lab
+    if request.user not in lab.members.all():
+        raise PermissionDenied()
+    else: 
+        context = {
+            'order' : order,
+        }
 
-    if request.method == "POST":
-        if request.POST.get('Approve'):
-            order.status = 'Approved'
-            order.save()
+        if request.method == "POST":
+            if request.POST.get('Approve'):
+                order.status = 'Approved'
+                order.save()
 
-        elif request.POST.get('Reject'):
-            order.status = 'Rejected'
-            order.save()
-    return render(request, 'order_detail.html', context)
+            elif request.POST.get('Reject'):
+                order.status = 'Rejected'
+                order.save()
+        return render(request, 'order_detail.html', context)
 
     
+class InviteList(ListView):
+    template_name = 'invite_list.html' 
+    model = LabInvite 
+    context_object_name = 'invites'
 
+    def get_queryset(self):
+        user = self.request.user
+        queryset = LabInvite.objects.filter(invitee = user).order_by('created_at')
+        return queryset
+
+@login_required
+def InviteDetail(request, pk):
+    invite = LabInvite.objects.get(id = pk)
+    if request.user != invite.invitee:
+        raise PermissionDenied()
+    
+    else: 
+        context = {
+        'invite' : invite,
+        }
+        if request.method == "POST":
+            print('hello')
+            if request.POST.get('Accept'):
+                invite.status = 'Accepted'
+                invite.AcceptInvite()
+                invite.save()
+        return render(request, 'invite_detail.html', context)
 
 

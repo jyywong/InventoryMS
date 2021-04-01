@@ -21,8 +21,7 @@
                                 <div class="card-block">
                                     <h1 class="mb-4">{{lab.name}}</h1><a href="{% url 'invite_member' lab.pk %}"><button class="btn btn-secondary">Add Member</button></a>
                                     <a href="{% url 'create_inventory' lab.pk %}"><button class="btn btn-secondary">Add an inventory</button></a>
-                                    <h5> PI:  Dr. Bean </h5>
-                                    <h5> Notes:  </h5>
+
                                 </div>
                             </div>
                         </div>
@@ -134,7 +133,7 @@
                                                         <p class="m-0">Lorem Ipsum is simply…</p>
                                                     </td>
                                                     
-                                                    <td><a href="#"><button class="btn btn-danger">Remove</button></a></td>
+                                                    <td><a href="{%url 'remove_member' lab.pk member.pk %}"><button class="btn btn-danger">Remove</button></a></td>
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>
@@ -161,14 +160,18 @@
 {% block javascripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 <script>
+    var invTraffic = JSON.parse("{{inv_traffic|escapejs}}")
+    console.log(Object.keys(invTraffic))
+    
+
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: [...Object.keys(invTraffic)],
             datasets: [{
                 label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
+                data: [...Object.values(invTraffic)],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -189,6 +192,9 @@
             }]
         },
         options: {
+            legend:{
+                display: false
+            },
             scales: {
                 yAxes: [{
                     ticks: {
