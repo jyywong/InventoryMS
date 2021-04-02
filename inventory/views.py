@@ -16,7 +16,7 @@ from json import dumps
 
 
 
-class Home(TemplateView):
+class Home(LoginRequiredMixin, TemplateView):
     template_name = 'homepage.html'
 
 '''
@@ -44,7 +44,8 @@ class ItemMixin(LoginRequiredMixin, UserPassesTestMixin):
 Lab related views
 '''
 
-class Lab_Create(CreateView):
+class Lab_Create(LoginRequiredMixin, CreateView):
+    login_url = 'login'
     model = Lab
     fields = ['name'] 
     template_name = 'create_lab.html'
@@ -59,6 +60,7 @@ class Lab_Create(CreateView):
         return super(Lab_Create, self).form_valid(form)
 
 class LabList(LoginRequiredMixin, ListView):
+    login_url = 'login'
     model = Lab
     context_object_name = 'labs'
     template_name='my_labs.html'
@@ -69,6 +71,7 @@ class LabList(LoginRequiredMixin, ListView):
         return queryset
 
 class LabView(LabMixin, DetailView):
+    login_url = 'login'
     model = Lab
     context_object_name = "lab"
 
@@ -91,6 +94,7 @@ class LabView(LabMixin, DetailView):
         return context
 
 class LabAdd(LabMixin, UpdateView):
+    login_url = 'login'
     model = Lab
     fields = ['members']
     context_object_name = "lab"
@@ -100,6 +104,7 @@ class LabAdd(LabMixin, UpdateView):
             return reverse('lab_view', args =(self.object.id,))
 
 class InviteMember(LabMixin, FormView):
+    login_url = 'login'
     template_name = 'invite_member.html'
     form_class = InviteForm
     success_url = reverse_lazy('homepage')
@@ -135,6 +140,7 @@ def RemoveMember(request, lab_pk, user_pk):
         return render(request, 'remove_member.html', context)
 
 class LabOrderList(LabMixin, ListView):
+    login_url = 'login'
     model = Item_order
     context_object_name = 'orders'
     template_name='lab_order_list.html'
@@ -160,6 +166,7 @@ Inventory related views
 '''
 
 class Inventory_Create(LabMixin, CreateView):
+    login_url = 'login'
     model = Inventory
     fields = ['name']
     template_name = 'create_inv.html'
@@ -178,6 +185,7 @@ class Inventory_Create(LabMixin, CreateView):
         return reverse('lab_view', args =(self.kwargs['pk'],))
 
 class InvList(LabMixin, ListView):
+    login_url = 'login'
     model = Inventory
     context_object_name = 'invs'
     template_name='lab_invs.html'
@@ -188,6 +196,7 @@ class InvList(LabMixin, ListView):
     
 
 class InventoryDelete(InventoryMixin, DeleteView):
+    login_url = 'login'
     model = Inventory
     template_name = 'delete_inventory.html'
 
@@ -208,12 +217,14 @@ class InventoryDelete(InventoryMixin, DeleteView):
         return context
 
 class Inventory_Update(LabMixin, UpdateView):
+    login_url = 'login'
     model = Inventory
     fields = ['item']
     template_name = 'create_lab.html'
 
     
 class InvView(InventoryMixin, DetailView):
+    login_url = 'login'
     model = Inventory
     context_object_name = "inv"
 
@@ -233,6 +244,7 @@ class InvView(InventoryMixin, DetailView):
         return context
 
 class InventoryOrderList(InventoryMixin, ListView):
+    login_url = 'login'
     model = Item_order
     context_object_name = 'orders'
     template_name = 'inv_order_list.html'
@@ -258,6 +270,7 @@ Item related views
 '''
     
 class Item_Create(InventoryMixin, CreateView):
+    login_url = 'login'
     model = Item
     fields = ['name', 'e_date', 'manufacturer', 'notes', 'quantity']
     template_name = 'create_item.html'
@@ -282,6 +295,7 @@ class Item_Create(InventoryMixin, CreateView):
         return reverse('inventory_view',args =(self.kwargs['pk'],) )
 
 class Item_Delete(ItemMixin, DeleteView):
+    login_url = 'login'
     model = Item
     template_name = 'delete_item.html'
 
@@ -291,6 +305,7 @@ class Item_Delete(ItemMixin, DeleteView):
         return reverse('inventory_view',args =(inv.id,) )
 
 class ItemList(InventoryMixin, ListView):
+    login_url = 'login'
     model = Item
     context_object_name = 'items'
     template_name='item_list.html'
@@ -300,6 +315,7 @@ class ItemList(InventoryMixin, ListView):
         return queryset
  
 class ItemView(ItemMixin, DetailView):
+    login_url = 'login'
     model = Item
     context_object_name = "item"
 
@@ -312,6 +328,7 @@ class ItemView(ItemMixin, DetailView):
         return context
 
 class ItemAdd(ItemMixin, UpdateView):
+    login_url = 'login'
     model = Item
     fields = ['quantity']
     context_object_name = "item"
@@ -332,6 +349,7 @@ class ItemAdd(ItemMixin, UpdateView):
             return reverse('item_view', args =(self.object.id,))
 
 class ItemRemove(ItemMixin, UpdateView):
+    login_url = 'login'
     model = Item
     fields = ['quantity']
     context_object_name = "item"
@@ -354,6 +372,7 @@ class ItemRemove(ItemMixin, UpdateView):
             return reverse('item_view', args =(self.object.id,))
 
 class ItemOrderCreate(ItemMixin, CreateView):
+    login_url = 'login'
     model = Item_order
     fields = ['quantity', 'needed_by', 'notes']
     template_name = 'create_order.html'
@@ -384,6 +403,7 @@ Other views
 '''
 
 class OrderList(LoginRequiredMixin, ListView):
+    login_url = 'login'
     model = Item_order
     context_object_name = 'orders'
     template_name='order_list2.html'
@@ -420,6 +440,7 @@ def OrderDetail(request, pk):
 
     
 class InviteList(ListView):
+    login_url = 'login'
     template_name = 'invite_list.html' 
     model = LabInvite 
     context_object_name = 'invites'

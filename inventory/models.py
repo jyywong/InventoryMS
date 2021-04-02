@@ -2,8 +2,8 @@
 from django.db import models
 from core import settings
 from django.db.models import Q
-from datetime import date
-import datetime
+from datetime import date, datetime
+import datetime as dt
 # Create your models here.
 class Lab(models.Model):
     name = models.CharField(max_length=255)
@@ -81,9 +81,11 @@ class Item_Change_Log(models.Model):
     def item_traffic_last_month(item):
         past_month_change_logs = Item_Change_Log.objects.filter(
             Q(item = item) &
-            Q(date__range =  (date.today() - datetime.timedelta(days = 30), date.today())) &
+            Q(date__range =  (datetime.now() - dt.timedelta(days = 30), datetime.now())) &
             Q(action = 'Remove')
         )
+        print(datetime.now() - dt.timedelta(days = 30))
+        print(past_month_change_logs)
         total = 0
         for logs in past_month_change_logs:
             total += logs.quantity

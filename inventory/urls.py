@@ -3,6 +3,7 @@ from inventory import views
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
+    path('', views.Home.as_view(), name="homepage"),
     path('test_view', views.Home.as_view(), name="homepage"),
 
     # Lab urls
