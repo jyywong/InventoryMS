@@ -289,7 +289,6 @@ class Item_Create(InventoryMixin, CreateView):
         object = form.save(commit = False)
         object.inventory = Inventory.objects.get(id = self.kwargs['pk'])
         object.save()
-
         return super().form_valid(form)
     def get_success_url(self):
         return reverse('inventory_view',args =(self.kwargs['pk'],) )
@@ -395,7 +394,7 @@ class ItemOrderCreate(ItemMixin, CreateView):
         return context
 
     def get_success_url(self):
-        return reverse('home')
+        return reverse('homepage')
 
 
 '''
@@ -439,7 +438,7 @@ def OrderDetail(request, pk):
         return render(request, 'order_detail.html', context)
 
     
-class InviteList(ListView):
+class InviteList(LoginRequiredMixin, ListView):
     login_url = 'login'
     template_name = 'invite_list.html' 
     model = LabInvite 
