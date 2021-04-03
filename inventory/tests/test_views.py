@@ -1,10 +1,13 @@
-from django.test import TestCase
-from django.urls import reverse, resolve
-from django.contrib.auth import get_user_model
 from datetime import date
+
+from django.contrib.auth import get_user_model
+from django.test import TestCase
+from django.urls import resolve, reverse
 from inventory.forms import InviteForm
+from inventory.models import (Inventory, Item, Item_Change_Log, Item_order,
+                              Lab, LabInvite)
 from inventory.views import *
-from inventory.models import Lab, Inventory, Item, Item_Change_Log, Item_order, LabInvite
+
 
 class UserAndLabSetUpTestCase(TestCase):
     def setUp(self):

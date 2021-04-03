@@ -29,7 +29,9 @@ class InventoryList(generics.ListCreateAPIView):
         lab_pk = self.kwargs['lab_pk']
         return Inventory.objects.filter(lab = lab_pk)
 
-
+    def perform_create(self, serializer):
+        serializer.save(lab = Lab.objects.get(id = self.kwargs['lab_pk']))
+        
 class ItemList(generics.ListCreateAPIView):
     queryset = Item.objects.all()
     permission_classes = [IsMemberOfLab]
@@ -38,6 +40,9 @@ class ItemList(generics.ListCreateAPIView):
     def get_queryset(self):
         inv_pk = self.kwargs['inv_pk']
         return Item.objects.filter(inventory = inv_pk)
+
+    def perform_create(self, serializer):
+        serializer.save(inventory = Inventory.objects.get(id = self.kwargs['inv_pk']))
 
 class ItemDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Item.objects.all()

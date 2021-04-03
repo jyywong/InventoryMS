@@ -21,7 +21,7 @@ class Lab(models.Model):
 
 
 class Inventory(models.Model):
-    lab = models.ForeignKey(Lab, on_delete= models.CASCADE, related_name='inventory')
+    lab = models.ForeignKey(Lab, on_delete= models.CASCADE, related_name='inventory', blank = True)
     name = models.CharField(max_length=255)
     def __str__(self):
         return self.name
@@ -38,10 +38,10 @@ class Inventory(models.Model):
         return item_traffic
 
 class Item(models.Model):
-    inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, related_name='item')
+    inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, related_name='item', blank = True)
     name = models.CharField(max_length=255)
-    e_date = models.DateField(blank =True)
-    manufacturer = models.CharField(max_length=255)
+    e_date = models.DateField(blank =True, null=True)
+    manufacturer = models.CharField(max_length=255, blank = True)
     notes = models.TextField(blank=True)
     bar_code = models.BigIntegerField(blank =True, null=True)
     location_text = models.TextField(blank =True)
