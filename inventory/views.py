@@ -14,10 +14,17 @@ from django.core.exceptions import PermissionDenied
 from json import dumps
 # Create your views here.
 
+@login_required
+def Home(request):
+    if Lab.objects.filter(members= request.user) == 0:
+        return render(request, 'homepage.html')
+    else: 
+        return redirect('lab_list')
 
-
-class Home(LoginRequiredMixin, TemplateView):
-    template_name = 'homepage.html'
+# class Home(LoginRequiredMixin, TemplateView):
+#     def get(self, request, *args, **kwargs):
+#         if Lab.objects.filter(members= request.user).count() == 0:
+#             return redirect('lab_list') 
 
 '''
 Permission mixins 
