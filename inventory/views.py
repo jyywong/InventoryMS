@@ -239,11 +239,11 @@ class InvView(InventoryMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         this_inv = Inventory.objects.get(id = self.kwargs['pk'])
-        
+        item_traffic_JSON = dumps(this_inv.get_traffic_per_item())
         context = super().get_context_data(**kwargs)
         context['items'] = Item.objects.filter(inventory = this_inv)
         context['item_count'] = Item.objects.filter(inventory = this_inv).count()
-        context['item_traffic'] = this_inv.get_traffic_per_item()
+        context['item_traffic'] = item_traffic_JSON
         context['order_count'] = Item_order.objects.filter(
                 Q(item__inventory = this_inv) & 
                 Q(status = "Pending")
