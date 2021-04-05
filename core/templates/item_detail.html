@@ -33,7 +33,7 @@
                         <div class="col-md-6 col-xl-4">
                             <div class="card">
                                 <div class="card-block">
-                                    <h6 class="mb-4">Average monthly use</h6>
+                                    <h6 class="mb-4">Quantity over past 30 days</h6>
                                     <canvas id="myChart" width="400" height="200"></canvas>
                                 </div>
                             </div>
@@ -83,9 +83,9 @@
                                                         <h6 class="text-muted">{{log.date}}</h6>
                                                     </td>
                                                     {% if log.action == 'Add' %}
-                                                    <td> <h5><i class="fas fa-circle text-c-green f-10 m-r-15"></i>Added: {{log.quantity}}</h5></td>
+                                                    <td> <h5><i class="fas fa-circle text-c-green f-10 m-r-15"></i>Added: {{log.quantity_changed}}</h5></td>
                                                     {% else %}
-                                                    <td> <h5><i class="fas fa-circle text-c-red f-10 m-r-15"></i>Removed: {{log.quantity}}</h5></td>
+                                                    <td> <h5><i class="fas fa-circle text-c-red f-10 m-r-15"></i>Removed: {{log.quantity_changed}}</h5></td>
                                                     {% endif %}
                                                 </tr>
                                                 {% endfor %}
@@ -113,15 +113,18 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+
 <script>
+    var item_traffic = JSON.parse("{{item_traffic|escapejs}}")
+    console.log(item_traffic)
     var ctx = document.getElementById('myChart').getContext('2d');
     var myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: [...Object.keys(item_traffic)],
             datasets: [{
                 label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
+                data: [...Object.values(item_traffic)],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
                     'rgba(54, 162, 235, 0.2)',
@@ -142,6 +145,9 @@
             }]
         },
         options: {
+            legend:{
+                display: false
+            },
             scales: {
                 yAxes: [{
                     ticks: {

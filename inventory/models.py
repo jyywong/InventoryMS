@@ -50,6 +50,8 @@ class Item(models.Model):
     def __str__(self):
         return self.name
 
+        
+
 class Item_Change_Log(models.Model):
     action_choices = [
         ('Add', 'Add'),
@@ -61,15 +63,16 @@ class Item_Change_Log(models.Model):
     )
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='item_change_log')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user')
-    quantity = models.IntegerField()
+    quantity_changed = models.IntegerField()
     date = models.DateTimeField(auto_now= True)
+    new_quantity = models.IntegerField(blank=True, null=True)
 
     @staticmethod
     def get_most_recent_restock(item):
         item_change_log = Item_Change_Log.objects.filter(item = item).order_by('-date')
         for log in item_change_log:
             if log.action == 'Add':
-                return log.quantity
+                return log.quantity_changed
     @staticmethod
     def percent_of_last_restock(item):
         if Item_Change_Log.get_most_recent_restock(item):
@@ -88,8 +91,25 @@ class Item_Change_Log(models.Model):
         print(past_month_change_logs)
         total = 0
         for logs in past_month_change_logs:
-            total += logs.quantity
+            total += logs.quantity_changed
         return total 
+    @staticmethod
+    def quantity_over_past_30_days(item):
+        thirty_days_ago = date.today() - dt.timedelta(days = 30)
+        days =[]
+        for i in range(31):
+            days.append(thirty_days_ago + dt.timedelta(days = i))
+        total = dict((datetime.strftime(day,"%Y-%m-%d"), 0) for day in days)
+        for key in total:
+            this_date = datetime.strptime(key, "%Y-%m-%d")
+            if Item_Change_Log.objects.filter(item = item).filter(date__range = (this_date, this_date + dt.timedelta(hours=24))).count() > 0 :
+                print('hello')
+                total[key] = Item_Change_Log.objects.filter(
+                    Q(date__range = (this_date, this_date + dt.timedelta(hours=24))) &
+                    Q(item = item)
+                    ).order_by('-date').first().new_quantity
+        return total
+            
 
 
 

@@ -329,8 +329,10 @@ class ItemView(ItemMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['logs'] = Item_Change_Log.objects.filter(item = Item.objects.get(id = self.kwargs['pk'])).order_by('-date')
-        context['percent'] = Item_Change_Log.percent_of_last_restock(Item.objects.get(id = self.kwargs['pk']) )
+        this_item = Item.objects.get(id = self.kwargs['pk'])
+        context['logs'] = Item_Change_Log.objects.filter(item = this_item).order_by('-date')
+        context['percent'] = Item_Change_Log.percent_of_last_restock(item = this_item)
+        context['item_traffic'] = dumps(Item_Change_Log.quantity_over_past_30_days(this_item))
         return context
 
 class ItemAdd(ItemMixin, UpdateView):
@@ -347,8 +349,9 @@ class ItemAdd(ItemMixin, UpdateView):
         Item_Change_Log.objects.create(
             item = Item.objects.get(id = self.kwargs['pk']),
             user = self.request.user,
-            quantity = change,
-            action = 'Add'
+            quantity_changed = change,
+            action = 'Add',
+            new_quantity = object.quantity
         )
         return super().form_valid(form)
     def get_success_url(self):
@@ -370,8 +373,9 @@ class ItemRemove(ItemMixin, UpdateView):
         Item_Change_Log.objects.create(
             item = Item.objects.get(id = self.kwargs['pk']),
             user = self.request.user,
-            quantity = change,
-            action = 'Remove'
+            quantity_changed = change,
+            action = 'Remove',
+            new_quantity = object.quantity
         )
         return super().form_valid(form)
     def get_success_url(self):
